@@ -1,11 +1,12 @@
 mod core;
-mod index;
-mod user;
 mod extract;
+mod index;
 mod middleware;
+mod user;
 
 #[tokio::main]
 async fn main() {
+    dotenv::dotenv().ok();
     tracing_init();
     let app = core::controller::init();
 

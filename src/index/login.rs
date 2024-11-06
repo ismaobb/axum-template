@@ -1,11 +1,11 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, sync::Arc};
 
-use axum::Json;
+use axum::{Extension, Json};
 use axum_extra::extract::WithRejection;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    core::{jwt::jwt_encode, ApiErr, ApiOk, Role},
+    core::{jwt::jwt_encode, ApiErr, ApiOk, AppState, Role},
     extract::User,
 };
 
@@ -22,6 +22,7 @@ pub struct LoginResponse {
 }
 
 pub async fn login(
+    Extension(app_state): Extension<Arc<AppState>>,
     WithRejection(Json(login_body), _): WithRejection<Json<LoginBody<'_>>, ApiErr>,
 ) -> Result<ApiOk<LoginResponse>, ApiErr> {
     let LoginBody {
@@ -32,12 +33,16 @@ pub async fn login(
 
     tracing::info!(?device);
     if username.eq("schemer") && password.eq("14e1b600b1fd579f47433b88e8d85291") {
-        let access_token = jwt_encode(&User {
-            id: 1,
-            username: username.into_owned(),
-            role: Role(1),
-            device,
-        })?;
+        let access_token = jwt_encode(
+            &User {
+                id: 1,
+                username: username.into_owned(),
+                role: Role(1),
+                device,
+            },
+            &app_state.config.jwt_secret,
+            app_state.config.jwt_expire_in_hours,
+        )?;
         Ok(ApiOk::from(LoginResponse { access_token }))
     } else {
         Err(ApiErr::WrongCredentials)

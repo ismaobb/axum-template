@@ -1,9 +1,6 @@
 use std::sync::Arc;
 
-use axum::{
-    extract::{Request, State},
-    RequestExt,
-};
+use axum::{extract::Request, Extension, RequestExt};
 use axum_extra::{
     headers::{authorization::Bearer, Authorization},
     TypedHeader,
@@ -19,14 +16,13 @@ use crate::{
 /// req.extensions_mut().insert(crate::user::User)
 /// ```
 pub async fn auth_token(
-    State(state): State<Arc<AppState>>,
+    Extension(app_state): Extension<Arc<AppState>>,
     passthrough: Passthrough,
     mut req: Request,
 ) -> Result<Request, ApiErr> {
     if passthrough.0 {
         return Ok(req);
     }
-    tracing::debug!(?state);
     let TypedHeader(Authorization(bearer)) = req
         .extract_parts::<TypedHeader<Authorization<Bearer>>>()
         .await
@@ -34,7 +30,7 @@ pub async fn auth_token(
 
     tracing::info!(?bearer);
 
-    jwt_decode(bearer.token()).map(|c| {
+    jwt_decode(bearer.token(), &app_state.config.jwt_secret).map(|c| {
         req.extensions_mut().insert(User {
             id: c.id,
             username: c.username,

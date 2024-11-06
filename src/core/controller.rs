@@ -11,7 +11,7 @@ use tower_http::{
 
 use crate::{index, middleware::auth_token, user};
 
-use super::AppState;
+use super::{config::Config, AppState};
 
 /// 路由规则
 /// ```
@@ -25,7 +25,10 @@ use super::AppState;
 ///    .layer(public_layer)
 /// ```
 pub fn init() -> Router {
-    let app_state = Arc::new(AppState { conn: 1 });
+    let config = Config::init();
+    tracing::info!(?config);
+    let app_state = Arc::new(AppState { conn: 1, config });
+
     let public_layer = tower::ServiceBuilder::new()
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new())
