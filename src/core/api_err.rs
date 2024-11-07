@@ -1,11 +1,6 @@
 use core::fmt;
 
-use axum::{
-    extract::rejection::{JsonRejection, QueryRejection},
-    http::StatusCode,
-    response::IntoResponse,
-    Json,
-};
+use axum::{extract::rejection::JsonRejection, http::StatusCode, response::IntoResponse, Json};
 use thiserror::Error;
 
 use super::ApiOk;
@@ -44,13 +39,6 @@ impl IntoResponse for ApiErr {
             }),
         )
             .into_response()
-    }
-}
-
-impl From<QueryRejection> for ApiErr {
-    fn from(value: QueryRejection) -> Self {
-        tracing::info!("{}", value.body_text());
-        ApiErr::Forbidden
     }
 }
 

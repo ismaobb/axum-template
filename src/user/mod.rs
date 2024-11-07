@@ -9,7 +9,7 @@ use serde::Deserialize;
 
 use crate::{
     core::{ApiErr, ApiOk, AppState, Role, RoleState},
-    extract::User,
+    extract::Claims,
     middleware::{auth_role, role_check},
 };
 
@@ -38,21 +38,21 @@ struct UserQuery {
     roll_id: u32,
 }
 
-async fn create_user() -> Result<ApiOk<User>, ApiErr> {
-    Err(ApiErr::Forbidden)
+async fn create_user() -> Result<ApiOk<Claims>, ApiErr> {
+    Err(ApiErr::WrongCredentials)
 }
 
 async fn find_users(
     Query(query): Query<UserQuery>,
     Extension(state): Extension<Arc<AppState>>,
-    u: User,
+    claims: Claims,
     _req: Request,
-) -> Result<ApiOk<Vec<User>>, ApiErr> {
+) -> Result<ApiOk<Vec<Claims>>, ApiErr> {
     tracing::debug!(?query);
-    tracing::info!(?u);
+    tracing::info!(?claims);
     tracing::info!(name = "find_users", "{}", state.conn);
 
-    let api_response = ApiOk::from(vec![u]);
+    let api_response = ApiOk::from(vec![claims]);
 
     Ok(api_response)
 }

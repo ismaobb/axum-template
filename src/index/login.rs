@@ -5,8 +5,8 @@ use axum_extra::extract::WithRejection;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    core::{jwt::jwt_encode, ApiErr, ApiOk, AppState, Role},
-    extract::User,
+    core::{ApiErr, ApiOk, AppState, Role},
+    extract::Claims,
 };
 
 #[derive(Debug, Deserialize)]
@@ -33,16 +33,14 @@ pub async fn login(
 
     tracing::info!(?device);
     if username.eq("schemer") && password.eq("14e1b600b1fd579f47433b88e8d85291") {
-        let access_token = jwt_encode(
-            &User {
-                id: 1,
-                username: username.into_owned(),
-                role: Role(1),
-                device,
-            },
-            &app_state.config.jwt_secret,
+        let access_token = Claims::new(
+            1,
+            device,
+            username.into_owned(),
+            Role(1),
             app_state.config.jwt_expire_in_hours,
-        )?;
+        )
+        .encode(&app_state.config.jwt_secret)?;
         Ok(ApiOk::from(LoginResponse { access_token }))
     } else {
         Err(ApiErr::WrongCredentials)

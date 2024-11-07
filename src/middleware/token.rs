@@ -7,8 +7,8 @@ use axum_extra::{
 };
 
 use crate::{
-    core::{jwt::jwt_decode, ApiErr, AppState},
-    extract::{Passthrough, User},
+    core::{ApiErr, AppState},
+    extract::{Claims, Passthrough},
 };
 
 /// Bearer认证成功，写入到请求扩展，方便路由鉴权
@@ -30,13 +30,8 @@ pub async fn auth_token(
 
     tracing::info!(?bearer);
 
-    jwt_decode(bearer.token(), &app_state.config.jwt_secret).map(|c| {
-        req.extensions_mut().insert(User {
-            id: c.id,
-            username: c.username,
-            role: c.role,
-            device: c.device,
-        });
+    Claims::decode(bearer.token(), &app_state.config.jwt_secret).map(|claims| {
+        req.extensions_mut().insert(claims);
         req
     })
 }

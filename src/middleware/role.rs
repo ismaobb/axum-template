@@ -6,13 +6,13 @@ use axum::{
 
 use crate::{
     core::{ApiErr, AppState, Role, RoleState},
-    extract::{Passthrough, User},
+    extract::{Claims, Passthrough},
 };
 
 pub async fn auth_role(
     State(role_state): State<Arc<RoleState>>,
     Extension(app_state): Extension<Arc<AppState>>,
-    user: User,
+    claims: Claims,
     passthrough: Passthrough,
     req: Request<Body>,
 ) -> Result<Request<Body>, ApiErr> {
@@ -20,11 +20,10 @@ pub async fn auth_role(
         return Ok(req);
     }
 
-    tracing::info!(?user);
     tracing::debug!(?app_state);
     tracing::debug!(?role_state);
 
-    if user.role == role_state.0 {
+    if claims.role == role_state.0 {
         Ok(req)
     } else {
         Err(ApiErr::Forbidden)

@@ -9,7 +9,6 @@ pub use api_ok::ApiOk;
 pub mod controller;
 
 mod config;
-pub mod jwt;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Clone, Default, Deserialize)]
 pub struct Role(pub i32);
