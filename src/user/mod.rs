@@ -13,7 +13,8 @@ use crate::{
     middleware::{auth_role, role_check},
 };
 
-mod view;
+mod service;
+mod dto;
 
 pub fn controller() -> Router {
     let role_state = Arc::new(RoleState(Role(1)));
@@ -49,7 +50,6 @@ async fn find_users(
     _req: Request,
 ) -> Result<ApiOk<Vec<Claims>>, ApiErr> {
     tracing::debug!(?query);
-    tracing::info!(?claims);
     tracing::info!(name = "find_users", "{}", state.conn);
 
     let api_response = ApiOk::from(vec![claims]);

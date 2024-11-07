@@ -5,8 +5,11 @@ use axum::{
     Extension, Router,
 };
 use tower_http::{
-    compression::CompressionLayer, cors::CorsLayer, set_header::SetResponseHeaderLayer,
-    timeout::TimeoutLayer, trace::TraceLayer,
+    compression::CompressionLayer,
+    cors::CorsLayer,
+    set_header::SetResponseHeaderLayer,
+    timeout::TimeoutLayer,
+    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 
 use crate::{index, middleware::auth_token, user};
@@ -27,10 +30,15 @@ use super::{config::Config, AppState};
 pub fn init() -> Router {
     let config = Config::init();
     tracing::info!(?config);
-    let app_state = Arc::new(AppState { conn: 1, config });
+    let app_state: Arc<AppState> = Arc::new(AppState { conn: 1, config });
 
     let public_layer = tower::ServiceBuilder::new()
-        .layer(TraceLayer::new_for_http())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().level(tracing::Level::INFO))
+                .on_request(DefaultOnRequest::new().level(tracing::Level::INFO))
+                .on_response(DefaultOnResponse::new().level(tracing::Level::INFO)),
+        )
         .layer(CompressionLayer::new())
         .layer(CorsLayer::permissive())
         .layer(SetResponseHeaderLayer::appending(

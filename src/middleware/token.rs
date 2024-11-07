@@ -28,7 +28,7 @@ pub async fn auth_token(
         .await
         .map_err(|_| ApiErr::MissingToken)?;
 
-    tracing::info!(?bearer);
+    tracing::debug!(?bearer);
 
     Claims::decode(bearer.token(), &app_state.config.jwt_secret).map(|claims| {
         req.extensions_mut().insert(claims);

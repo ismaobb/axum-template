@@ -36,6 +36,6 @@ pub async fn role_check(
     next: Next,
     required_roles: Role,
 ) -> Result<Response, ApiErr> {
-    tracing::info!(?required_roles);
+    tracing::debug!(?required_roles);
     Ok(next.run(req).await)
 }

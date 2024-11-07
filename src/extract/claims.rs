@@ -63,9 +63,9 @@ impl Claims {
             &Validation::default(),
         )
         .map_err(ApiErr::InvalidToken)
-        .map(|t| {
-            tracing::info!(?t);
-            t.claims
+        .map(|token_data| {
+            tracing::info!(?token_data.claims);
+            token_data.claims
         })
     }
 }
