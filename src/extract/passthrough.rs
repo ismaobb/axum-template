@@ -29,7 +29,7 @@ where
         }
 
         if let Some(path) = parts.extensions.get::<MatchedPath>() {
-            if let Some(whitelist) = app_state.config.whitelist.clone() {
+            if let Some(whitelist) = &app_state.config.whitelist {
                 let passthrough = whitelist.iter().any(|pattern| pattern.eq(path.as_str()));
                 tracing::debug!(?passthrough);
                 return Ok(Passthrough(passthrough));
