@@ -12,7 +12,7 @@ use tower_http::{
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 
-use crate::{index, middleware::auth_token, user};
+use crate::{index, middleware::auth_token, session, user};
 
 use super::{config::Config, AppState};
 
@@ -27,10 +27,14 @@ use super::{config::Config, AppState};
 ///    .route("/whites",get(handler))
 ///    .layer(public_layer)
 /// ```
-pub fn init() -> Router {
+pub async fn init() -> Router {
     let config = Config::init();
     tracing::info!(?config);
-    let app_state: Arc<AppState> = Arc::new(AppState { conn: 1, config });
+
+    let app_state: Arc<AppState> = Arc::new(AppState {
+        conn: crate::core::db::init_db().await,
+        config,
+    });
 
     let public_layer = tower::ServiceBuilder::new()
         .layer(
@@ -56,10 +60,11 @@ pub fn init() -> Router {
         .layer(TimeoutLayer::new(Duration::from_secs(60)));
     Router::new()
         .merge(user::controller())
-        .route_layer(axum::middleware::map_request_with_state(
-            app_state.clone(),
-            auth_token,
-        ))
+        .merge(session::controller())
+        // .route_layer(axum::middleware::map_request_with_state(
+        //     app_state.clone(),
+        //     auth_token,
+        // ))
         .merge(index::controller())
         .layer(Extension(app_state))
         .route("/whites", axum::routing::get(|| async { "whites" }))

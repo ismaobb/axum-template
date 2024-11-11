@@ -9,6 +9,7 @@ pub use api_ok::ApiOk;
 pub mod controller;
 
 mod config;
+mod db;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Clone, Default, Deserialize)]
 pub struct Role(pub i32);
@@ -18,6 +19,6 @@ pub struct RoleState(pub Role);
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    pub conn: u32,
+    pub conn: sea_orm::DbConn,
     pub config: Config,
 }

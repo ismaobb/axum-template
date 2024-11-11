@@ -1,14 +1,14 @@
-mod core;
-mod extract;
-mod index;
-mod middleware;
-mod user;
+use tracing::level_filters::LevelFilter;
+use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
+    let level = std::env::var("RUST_LOG").unwrap_or(LevelFilter::INFO.to_string());
+    std::env::set_var("RUST_LOG", level);
+
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
+        .with_env_filter(EnvFilter::from_default_env())
         .compact()
         .pretty()
         .init();
@@ -22,7 +22,7 @@ async fn main() {
         )
     );
 
-    let app = core::controller::init();
+    let app = axum_template::core::controller::init().await;
     axum::serve(listener, app.into_make_service())
         .await
         .unwrap();

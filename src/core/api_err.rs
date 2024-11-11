@@ -14,6 +14,8 @@ pub enum ApiErr {
     WrongCredentials,
     #[error(transparent)]
     JsonExtractorRejection(#[from] JsonRejection),
+    #[error(transparent)]
+    DbError(#[from] sea_orm::DbErr),
 }
 
 impl IntoResponse for ApiErr {
@@ -28,13 +30,14 @@ impl IntoResponse for ApiErr {
             ApiErr::JsonExtractorRejection(json_rejection) => {
                 (json_rejection.status(), json_rejection.body_text())
             }
+            ApiErr::DbError(db_err) => (StatusCode::INTERNAL_SERVER_ERROR, db_err.to_string()),
         };
 
         (
             status_code,
             Json(ApiOk::<()> {
                 code: -1,
-                content: None,
+                data: None,
                 message: Some(message),
             }),
         )

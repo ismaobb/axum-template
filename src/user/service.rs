@@ -1,49 +1,47 @@
-// 生成一个trait，用于处理用户相关的业务逻辑
-pub trait UserService {
-    // 用户注册
-    fn register(&self, username: &str, password: &str) -> Result<(), String>;
+use std::sync::Arc;
 
-    // 用户登录
-    fn login(&self, username: &str, password: &str) -> Result<(), String>;
+use axum::{
+    extract::{Path, Query},
+    Extension,
+};
+use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter};
 
-    // 用户注销
-    fn logout(&self) -> Result<(), String>; // 用户修改密码
+use crate::{
+    core::{ApiErr, ApiOk, AppState},
+    entity::{
+        prelude::*,
+        users::{self, Model},
+    },
+};
+
+use super::dto::UserQueryDto;
+
+pub async fn find_users(
+    Query(query): Query<UserQueryDto>,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<ApiOk<Vec<Model>>, ApiErr> {
+    tracing::debug!(?query);
+    let users = Users::find()
+        .filter(
+            Condition::all()
+                .add_option(
+                    query
+                        .username
+                        .map(|username| users::Column::Username.eq(username)),
+                )
+                .add_option(query.id.map(|id| users::Column::Id.eq(id))),
+        )
+        .all(&state.conn)
+        .await?;
+
+    Ok(ApiOk::from(users))
 }
 
-// 实现UserService trait
-pub struct UserServiceImpl;
+pub async fn find_user(
+    Path(id): Path<i32>,
+    Extension(state): Extension<Arc<AppState>>,
+) -> Result<ApiOk<Option<Model>>, ApiErr> {
+    let user = Users::find_by_id(id).one(&state.conn).await?;
 
-impl UserService for UserServiceImpl {
-    fn register(&self, username: &str, password: &str) -> Result<(), String> {
-        // TODO: 实现用户注册逻辑
-        Ok(())
-    }
-
-    fn login(&self, username: &str, password: &str) -> Result<(), String> {
-        // TODO: 实现用户登录逻辑
-        Ok(())
-    }
-
-    fn logout(&self) -> Result<(), String> {
-        // TODO: 实现用户注销逻辑
-        Ok(())
-    }
-}
-
-// 测试UserService trait
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_register() {
-        let service = UserServiceImpl;
-        assert!(service.register("test", "password").is_ok());
-    }
-
-    #[test]
-    fn test_login() {
-        let service = UserServiceImpl;
-        assert!(service.login("test", "password").is_ok());
-    }
+    Ok(ApiOk::from(user))
 }

@@ -5,7 +5,7 @@ use serde::Serialize;
 pub struct ApiOk<T: Serialize> {
     #[serde(rename = "result")]
     pub code: i32,
-    pub content: Option<T>,
+    pub data: Option<T>,
     pub message: Option<String>,
 }
 
@@ -13,7 +13,7 @@ impl<T: Serialize> From<T> for ApiOk<T> {
     fn from(value: T) -> Self {
         Self {
             code: Default::default(),
-            content: Some(value),
+            data: Some(value),
             message: None,
         }
     }

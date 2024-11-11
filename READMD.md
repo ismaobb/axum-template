@@ -29,3 +29,13 @@ let app = Router::new()
            v
         responses
 ```
+
+## postgres
+``` bash
+docker run --name postgres -e POSTGRES_PASSWORD=example -v postgres_data:/var/lib/postgresql/data -p 5432:5432 --restart unless-stopped -d postgres
+```
+
+## generate
+``` bash
+sea generate entity -o src/entity --with-serde both
+```
