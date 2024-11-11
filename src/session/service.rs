@@ -5,19 +5,16 @@ use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter};
 
 use crate::{
     core::{ApiErr, ApiOk, AppState},
-    entity::{
-        prelude::*,
-        sessions::{self, Model},
-    },
+    entity::{prelude::*, sessions},
 };
 
-use super::dto::SessionQueryDto;
+use super::dto::{SessionQueryDto, SessionResponseDto};
 
 pub async fn get_sessions(
     Query(query): Query<SessionQueryDto>,
     Extension(app_state): Extension<Arc<AppState>>,
-) -> Result<ApiOk<Vec<(Model, Vec<crate::entity::context::Model>)>>, ApiErr> {
-    let sessions: Vec<(Model, Vec<crate::entity::context::Model>)> = Sessions::find()
+) -> Result<ApiOk<Vec<SessionResponseDto>>, ApiErr> {
+    let sessions = Sessions::find()
         .find_with_related(Context)
         .filter(
             Condition::all()
@@ -33,7 +30,10 @@ pub async fn get_sessions(
                 ),
         )
         .all(&app_state.conn)
-        .await?;
+        .await?
+        .into_iter()
+        .map(|(session, contexts)| SessionResponseDto { session, contexts })
+        .collect::<Vec<SessionResponseDto>>();
 
     Ok(ApiOk::from(sessions))
 }
