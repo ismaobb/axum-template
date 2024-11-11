@@ -3,6 +3,8 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::core::date_format;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
@@ -14,6 +16,7 @@ pub struct Model {
     pub password: String,
     #[sea_orm(unique)]
     pub email: Option<String>,
+    #[serde(with = "date_format")]
     pub created_at: Option<DateTime>,
 }
 

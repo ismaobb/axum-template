@@ -3,6 +3,8 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::core::date_format;
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "context")]
 pub struct Model {
@@ -11,6 +13,7 @@ pub struct Model {
     pub session_id: Option<i32>,
     #[sea_orm(column_type = "JsonBinary", nullable)]
     pub context_data: Option<Json>,
+    #[serde(with = "date_format")]
     pub updated_at: Option<DateTime>,
 }
 
