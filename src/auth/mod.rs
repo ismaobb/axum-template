@@ -5,7 +5,7 @@ mod logout;
 
 pub fn controller() -> Router {
     Router::new().nest_service(
-        "/",
+        "/auth",
         Router::new()
             .route("/login", post(login::login))
             .route("/logout", post(logout::logout)),

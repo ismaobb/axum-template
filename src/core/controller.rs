@@ -12,7 +12,7 @@ use tower_http::{
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 
-use crate::{index, middleware::auth_token, session, user};
+use crate::{auth, conversation, middleware::auth_token, session, user};
 
 use super::{config::Config, AppState};
 
@@ -61,11 +61,12 @@ pub async fn init() -> Router {
     Router::new()
         .merge(user::controller())
         .merge(session::controller())
+        .merge(conversation::controller())
         // .route_layer(axum::middleware::map_request_with_state(
         //     app_state.clone(),
         //     auth_token,
         // ))
-        .merge(index::controller())
+        .merge(auth::controller())
         .layer(Extension(app_state))
         .route("/whites", axum::routing::get(|| async { "whites" }))
         .layer(public_layer)

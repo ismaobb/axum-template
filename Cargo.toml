@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "main"
+name = "axum-template"
 path = "src/bin/main.rs"
 
 [dependencies]
@@ -12,11 +12,14 @@ axum = "0.7.7"
 axum-extra = { version = "0.9.4", features = ["typed-header"] }
 chrono = "0.4.38"
 dotenv = "0.15.0"
+futures = "0.3.31"
 jsonwebtoken = "9.3.0"
+reqwest = { version = "0.12.9", features = ["json", "stream"] }
 sea-orm = { version = "1.1.0", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
 serde = { version = "1.0.213", features = ["derive"] }
 thiserror = "1.0.67"
 tokio = { version = "1.41.0", features = ["full"] }
+tokio-stream = "0.1.16"
 tower = "0.5.1"
 tower-http = { version = "0.6.1", features = ["full"] }
 tracing = "0.1.40"
