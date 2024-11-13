@@ -4,6 +4,8 @@ pub struct Config {
     pub jwt_secret: String,
     pub jwt_expire_in_hours: i64,
     pub whitelist: Option<Vec<String>>,
+    pub basic_auth_username: String,
+    pub basic_auth_password: String,
 }
 
 impl Config {
@@ -18,6 +20,10 @@ impl Config {
             whitelist: std::env::var("WHITELIST_PATHS")
                 .ok()
                 .map(|s| s.split(",").map(|s| s.trim().to_owned()).collect()),
+            basic_auth_username: std::env::var("BASIC_AUTH_USERNAME")
+                .expect("BASIC_AUTH_USERNAME must be set"),
+            basic_auth_password: std::env::var("BASIC_AUTH_PASSWORD")
+                .expect("BASIC_AUTH_PASSWORD must be set"),
         }
     }
 }

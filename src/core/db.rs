@@ -1,11 +1,9 @@
-use std::{env, time::Duration};
+use std::time::Duration;
 
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 
-pub async fn init_db() -> DatabaseConnection {
-    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
-    tracing::info!(db_url);
-    let mut opt = ConnectOptions::new(db_url);
+pub async fn init_db(url: &str) -> DatabaseConnection {
+    let mut opt = ConnectOptions::new(url);
     opt.max_connections(10)
         .min_connections(5)
         .connect_timeout(Duration::from_secs(5))

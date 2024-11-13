@@ -10,6 +10,7 @@ use tower_http::{
     set_header::SetResponseHeaderLayer,
     timeout::TimeoutLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
+    validate_request::ValidateRequestHeaderLayer,
 };
 
 use crate::{auth, conversation, middleware::auth_token, session, user};
@@ -32,7 +33,7 @@ pub async fn init() -> Router {
     tracing::info!(?config);
 
     let app_state: Arc<AppState> = Arc::new(AppState {
-        conn: crate::core::db::init_db().await,
+        conn: crate::core::db::init_db(&config.database_url).await,
         config,
     });
 
@@ -43,6 +44,10 @@ pub async fn init() -> Router {
                 .on_request(DefaultOnRequest::new().level(tracing::Level::INFO))
                 .on_response(DefaultOnResponse::new().level(tracing::Level::INFO)),
         )
+        .layer(ValidateRequestHeaderLayer::basic(
+            &app_state.config.basic_auth_username,
+            &app_state.config.basic_auth_password,
+        ))
         .layer(CompressionLayer::new())
         .layer(CorsLayer::permissive())
         .layer(SetResponseHeaderLayer::appending(
