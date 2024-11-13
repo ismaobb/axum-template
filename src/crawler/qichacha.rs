@@ -12,7 +12,7 @@ struct QichachaResult {
 }
 
 // 企查查搜索函数
-async fn qichacha_search(query: &str) -> Result<(), ApiErr> {
+pub async fn qichacha_search(query: &str) -> Result<(), ApiErr> {
     let api_key = env::var("QICHACHA_API_KEY").expect("QICHACHA_API_KEY must be set");
     let secret_key = env::var("QICHACHA_SECRET_KEY").expect("QICHACHA_SECRET_KEY must be set");
     let endpoint = env::var("QICHACHA_ENDPOINT").expect("QICHACHA_ENDPOINT must be set");

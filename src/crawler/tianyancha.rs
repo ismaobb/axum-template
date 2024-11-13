@@ -5,7 +5,7 @@ use serde::Deserialize;
 use crate::{core::ApiErr, crawler::HttpClient};
 
 #[derive(Deserialize, Debug)]
-struct TianyanchaResult {
+pub struct TianyanchaResult {
     name: String,
     reg_capital: String,
 }
