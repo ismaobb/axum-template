@@ -33,7 +33,9 @@ impl IntoResponse for ApiErr {
                 (json_rejection.status(), json_rejection.body_text())
             }
             ApiErr::DbError(db_err) => (StatusCode::INTERNAL_SERVER_ERROR, db_err.to_string()),
-            ApiErr::HttpRequestError(error) => (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()),
+            ApiErr::HttpRequestError(error) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, error.to_string())
+            }
         };
 
         (

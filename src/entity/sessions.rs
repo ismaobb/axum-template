@@ -13,9 +13,9 @@ pub struct Model {
     pub user_id: Option<i32>,
     #[sea_orm(unique)]
     pub session_token: String,
-    #[serde(with="date_format")]
+    #[serde(with = "date_format")]
     pub created_at: Option<DateTime>,
-    #[serde(with="date_format")]
+    #[serde(with = "date_format")]
     pub expires_at: Option<DateTime>,
 }
 

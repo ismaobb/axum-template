@@ -9,8 +9,8 @@ pub use api_ok::ApiOk;
 pub mod controller;
 
 mod config;
-mod db;
 pub mod date_format;
+mod db;
 
 #[derive(Debug, PartialEq, Eq, Serialize, Clone, Default, Deserialize)]
 pub struct Role(pub i32);

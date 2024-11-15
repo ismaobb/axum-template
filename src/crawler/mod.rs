@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use reqwest::Client;
+use reqwest::{Client, Proxy};
 use tokio::join;
 
 mod bing;
@@ -17,6 +17,7 @@ impl Default for HttpClient {
         Self {
             client: Client::builder()
                 .timeout(Duration::from_secs(3))
+                .proxy(Proxy::http("http://127.0.0.1:7890").unwrap())
                 .build()
                 .expect("Failed to build http client"),
         }
