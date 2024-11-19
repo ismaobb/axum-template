@@ -20,6 +20,6 @@ pub struct RoleState(pub Role);
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    pub conn: sea_orm::DbConn,
-    pub config: Config,
+	pub conn: sea_orm::DbConn,
+	pub config: Config,
 }

@@ -8,31 +8,31 @@ use crate::core::date_format;
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "context")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
-    pub session_id: Option<i32>,
-    #[sea_orm(column_type = "JsonBinary", nullable)]
-    pub context_data: Option<Json>,
-    #[serde(with = "date_format")]
-    pub updated_at: Option<DateTime>,
+	#[sea_orm(primary_key)]
+	pub id: i32,
+	pub session_id: Option<i32>,
+	#[sea_orm(column_type = "JsonBinary", nullable)]
+	pub context_data: Option<Json>,
+	#[serde(with = "date_format")]
+	pub updated_at: Option<DateTime>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::sessions::Entity",
-        from = "Column::SessionId",
-        to = "super::sessions::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
-    )]
-    Sessions,
+	#[sea_orm(
+		belongs_to = "super::sessions::Entity",
+		from = "Column::SessionId",
+		to = "super::sessions::Column::Id",
+		on_update = "NoAction",
+		on_delete = "NoAction"
+	)]
+	Sessions,
 }
 
 impl Related<super::sessions::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Sessions.def()
-    }
+	fn to() -> RelationDef {
+		Relation::Sessions.def()
+	}
 }
 
 impl ActiveModelBehavior for ActiveModel {}
