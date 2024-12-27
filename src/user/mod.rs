@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::{
 	core::{Role, RoleState},
-	middleware::{auth_role, role_check},
+	middleware::role_check,
 };
 use axum::{routing::get, Router};
 

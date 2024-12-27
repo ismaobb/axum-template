@@ -13,7 +13,7 @@ use tower_http::{
 	validate_request::ValidateRequestHeaderLayer,
 };
 
-use crate::{auth, conversation, middleware::auth_token, session, user};
+use crate::{auth, conversation, session, user};
 
 use super::{config::Config, AppState};
 

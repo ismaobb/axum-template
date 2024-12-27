@@ -1,5 +1,5 @@
 use axum::{async_trait, extract::FromRequestParts, http::request::Parts};
-use chrono::{Duration, Utc};
+use chrono::Duration;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 
@@ -11,8 +11,8 @@ pub struct Claims {
 	pub username: String,
 	pub role: Role,
 	pub device: Option<String>,
-	iat: i64,
-	exp: i64,
+	iat: u64,
+	exp: u64,
 	sub: String,
 }
 
@@ -27,14 +27,14 @@ impl<S> FromRequestParts<S> for Claims {
 
 impl Claims {
 	pub fn new(id: i32, device: Option<String>, username: String, role: Role, hours: i64) -> Self {
-		let now = Utc::now();
+		let iat = jsonwebtoken::get_current_timestamp();
 		Self {
 			id,
 			device,
 			username,
 			role,
-			iat: now.timestamp(),
-			exp: (now + Duration::hours(hours)).timestamp(),
+			iat,
+			exp: iat + Duration::hours(hours).num_seconds() as u64,
 			sub: "axum-template".to_owned(),
 		}
 	}

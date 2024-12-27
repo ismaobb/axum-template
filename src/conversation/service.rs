@@ -6,12 +6,8 @@ use axum::{
 		sse::{Event, KeepAlive},
 		Sse,
 	},
-	Json,
 };
-use axum_extra::extract::WithRejection;
 use futures::Stream;
-use reqwest::header;
-use tokio::time::sleep;
 use tokio_stream::StreamExt;
 
 use crate::core::ApiErr;
